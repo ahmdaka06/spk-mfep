@@ -182,34 +182,31 @@
 
                     </div>
 
-                     @if(Auth::user()->role == 'opd' || Auth::user()->role == 'admin')
+                    @if(in_array(Auth::user()->role, ['opd', 'admin']))
 
- @if(Auth::user()->role == 'opd' || Auth::user()->role == 'admin')
+                        <div class="text-center mt-6 mb-6 space-y-3">
 
-<div class="text-center mt-6 mb-6 space-y-3">
+                            <div>
+                                <a
+                                    href="{{ route('cetak.laporan') }}"
+                                    class="inline-block px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-md"
+                                >
+                                    Cetak PDF Pegawai Teladan
+                                </a>
+                            </div>
 
-    <div>
-        <a
-            href="{{ url('/cetak-laporan') }}"
-            class="inline-block px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-md"
-        >
-            📄 Cetak PDF Pegawai Teladan
-        </a>
-    </div>
+                            <div>
+                                <a
+                                    href="{{ route('cetak.ranking') }}"
+                                    class="inline-block px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md"
+                                >
+                                    Cetak PDF Seluruh Ranking Pegawai
+                                </a>
+                            </div>
 
-    <div>
-        <a
-            href="{{ url('/cetak-ranking') }}"
-            class="inline-block px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md"
-        >
-            📊 Cetak PDF Seluruh Ranking Pegawai
-        </a>
-    </div>
+                        </div>
 
-</div>
- @endif   
-
-    @endif
+                    @endif
 
                 @else
 

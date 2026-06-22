@@ -1,14 +1,13 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ProfileController;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\Employee;
-use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/dashboard', function () {
@@ -29,8 +28,6 @@ Route::middleware('auth')->group(function () {
 
 });
 
-
-
 /*
 |--------------------------------------------------------------------------
 | ADMIN ONLY
@@ -39,9 +36,10 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    Route::get('/employees', [EmployeeController::class, 'index']);
+    Route::resource('employees', EmployeeController::class)
+        ->except(['show']);
 
-    Route::post('/import-pegawai', [EmployeeController::class, 'import']);
+    Route::post('/import-pegawai', [EmployeeController::class, 'import'])->name('employees.import');
 
     Route::get('/hitung-mfep', [EmployeeController::class, 'hitungMFEP']);
 
@@ -54,8 +52,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     });
 
 });
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -71,9 +67,9 @@ Route::middleware('auth')->group(function () {
         $tahun = $request->tahun ?? now()->year;
 
         $employees = Employee::where('bulan', $bulan)
-        ->where('tahun', $tahun)
-        ->orderBy('total_nilai', 'DESC')
-        ->get();
+            ->where('tahun', $tahun)
+            ->orderBy('total_nilai', 'DESC')
+            ->get();
 
         return view('perankingan', compact(
             'employees',
@@ -85,42 +81,13 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () {
 
-//     Route::get('/cetak-laporan', [EmployeeController::class, 'cetakLaporan']);
+    Route::get('/cetak-laporan', [EmployeeController::class, 'cetakLaporan'])
+        ->name('cetak.laporan');
 
-// });
-
-Route::get('/cetak-laporan', function () {
-
-    abort_if(!Auth::check() || Auth::user()->role !== 'opd', 403);
-
-    return app(App\Http\Controllers\EmployeeController::class)
-        ->cetakLaporan();
-});
-Route::get('/cetak-laporan', function () {
-
-    abort_if(
-        !Auth::check() ||
-        !in_array(Auth::user()->role, ['admin', 'opd']),
-        403
-    );
-
-    return app(App\Http\Controllers\EmployeeController::class)
-        ->cetakLaporan();
-
-});
-
-Route::get('/cetak-ranking', function () {
-
-    abort_if(
-        !Auth::check() ||
-        !in_array(Auth::user()->role, ['admin', 'opd']),
-        403
-    );
-
-    return app(App\Http\Controllers\EmployeeController::class)
-        ->cetakRanking();
+    Route::get('/cetak-ranking', [EmployeeController::class, 'cetakRanking'])
+        ->name('cetak.ranking');
 
 });
 

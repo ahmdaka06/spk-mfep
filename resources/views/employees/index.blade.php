@@ -2,7 +2,7 @@
 
     <x-slot name="header">
         <h2 class="font-bold text-3xl text-white leading-tight">
-            Data Pegawai & Import Excel
+            Data Pegawai
         </h2>
     </x-slot>
 
@@ -19,28 +19,86 @@
 
             @endif
 
+            {{-- Action Buttons --}}
+            <div class="flex flex-wrap gap-3 mb-6">
+                <a
+                    href="{{ route('employees.create') }}"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition font-medium"
+                >
+                    + Tambah Pegawai
+                </a>
+            </div>
+
             {{-- Upload Card --}}
             <div class="bg-white shadow-lg rounded-2xl p-8 mb-8">
 
-                <h1 class="text-3xl font-bold mb-2">
-                    Import Data Pegawai
+                <h1 class="text-2xl font-bold mb-2">
+                    Import Data Pegawai (Excel)
                 </h1>
 
                 <p class="text-gray-500 mb-6">
-                    Upload file Excel pegawai untuk proses perhitungan MFEP.
+                    Upload file Excel pegawai untuk proses perhitungan MFEP. Kolom yang diperlukan: nip, nama, bidang, jabatan, kedisiplinan, kualitas_kerja, tanggung_jawab, kerjasama, loyalitas.
                 </p>
 
-                <form action="/import-pegawai" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('employees.import') }}" method="POST" enctype="multipart/form-data">
 
                     @csrf
 
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
+                            <select name="bulan" class="border border-gray-300 rounded-lg p-3 w-full" required>
+                                <option value="">-- Pilih Bulan --</option>
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="6">Juni</option>
+                                <option value="7">Juli</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                            @error('bulan')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                            <input
+                                type="number"
+                                name="tahun"
+                                value="{{ date('Y') }}"
+                                min="2000"
+                                max="2100"
+                                class="border border-gray-300 rounded-lg p-3 w-full"
+                                required
+                            >
+                            @error('tahun')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+
                     <div class="mb-5">
 
+                        <label class="block text-sm font-medium text-gray-700 mb-1">File Excel</label>
                         <input
                             type="file"
                             name="file"
+                            accept=".xlsx,.xls,.csv"
                             class="border border-gray-300 rounded-lg p-3 w-full"
+                            required
                         >
+                        @error('file')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
 
                     </div>
 
@@ -110,6 +168,7 @@
                                 <th class="p-4 text-left">Kerjasama</th>
                                 <th class="p-4 text-left">Loyalitas</th>
                                 <th class="p-4 text-left">Total Nilai</th>
+                                <th class="p-4 text-left">Aksi</th>
 
                             </tr>
 
@@ -163,6 +222,27 @@
 
                                 <td class="p-4 font-bold text-blue-600">
                                     {{ $employee->total_nilai }}
+                                </td>
+
+                                <td class="p-4">
+                                    <div class="flex gap-2">
+                                        <a
+                                            href="{{ route('employees.edit', $employee) }}"
+                                            class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-lg text-sm transition"
+                                        >
+                                            Edit
+                                        </a>
+                                        <form action="{{ route('employees.destroy', $employee) }}" method="POST" onsubmit="return confirm('Yakin hapus pegawai ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button
+                                                type="submit"
+                                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm transition"
+                                            >
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
 
                             </tr>

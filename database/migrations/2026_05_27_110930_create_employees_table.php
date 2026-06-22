@@ -12,15 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
-
             $table->id();
 
             $table->string('nip');
             $table->string('nama');
-            $table->string('departemen');
-
-            $table->time('jam_masuk')->nullable();
-            $table->time('jam_pulang')->nullable();
 
             $table->integer('kedisiplinan')->nullable();
             $table->integer('kualitas_kerja')->nullable();
@@ -29,6 +24,9 @@ return new class extends Migration
             $table->integer('loyalitas')->nullable();
 
             $table->double('total_nilai')->nullable();
+
+            $table->string('bidang');
+            $table->string('jabatan');
 
             $table->timestamps();
         });
